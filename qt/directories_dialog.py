@@ -206,8 +206,6 @@ class DirectoriesDialog(QMainWindow):
 
         if self.app.prefs.directoriesWindowRect is not None:
             self.setGeometry(self.app.prefs.directoriesWindowRect)
-        else:
-            moveToScreenCenter(self)
 
     def _setupColumns(self):
         header = self.treeView.header()
@@ -326,3 +324,9 @@ class DirectoriesDialog(QMainWindow):
 
     def selectionChanged(self, selected, deselected):
         self._updateRemoveButton()
+
+    def showEvent(self, event):
+        if self.isMaximized() is False:
+            # have to do this here as the frameGeometry is not correct until shown
+            moveToScreenCenter(self)
+        super().showEvent(event)

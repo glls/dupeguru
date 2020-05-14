@@ -30,7 +30,7 @@ class Preferences(PreferencesBase):
             self.language = trans.installed_lang
 
         self.tableFontSize = get("TableFontSize", self.tableFontSize)
-        self.reference_bold_font = get('ReferenceBoldFont', self.reference_bold_font)
+        self.reference_bold_font = get("ReferenceBoldFont", self.reference_bold_font)
         self.resultWindowIsMaximized = get(
             "ResultWindowIsMaximized", self.resultWindowIsMaximized
         )
@@ -68,6 +68,7 @@ class Preferences(PreferencesBase):
         self.tableFontSize = QApplication.font().pointSize()
         self.reference_bold_font = True
         self.resultWindowIsMaximized = False
+        self.resultWindowMaximizeLocation = None
         self.resultWindowRect = None
         self.directoriesWindowRect = None
         self.recentResults = []
@@ -99,7 +100,7 @@ class Preferences(PreferencesBase):
         set_("Language", self.language)
 
         set_("TableFontSize", self.tableFontSize)
-        set_('ReferenceBoldFont', self.reference_bold_font)
+        set_("ReferenceBoldFont", self.reference_bold_font)
         set_("ResultWindowIsMaximized", self.resultWindowIsMaximized)
         self.set_rect("ResultWindowRect", self.resultWindowRect)
         self.set_rect("DirectoriesWindowRect", self.directoriesWindowRect)

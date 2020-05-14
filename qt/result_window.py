@@ -20,7 +20,6 @@ from PyQt5.QtWidgets import (
     QDialog,
     QPushButton,
     QCheckBox,
-    QDesktopWidget,
 )
 
 from hscommon.trans import trget
@@ -344,21 +343,12 @@ class ResultWindow(QMainWindow):
         self.statusLabel = QLabel(self)
         self.statusbar.addPermanentWidget(self.statusLabel, 1)
 
+        if self.app.prefs.resultWindowRect is not None:
+            self.setGeometry(self.app.prefs.resultWindowRect)
         if self.app.prefs.resultWindowIsMaximized:
+            if self.app.prefs.resultWindowMaximizeLocation is not None:
+                self.move(self.app.prefs.resultWindowMaximizeLocation)
             self.setWindowState(self.windowState() | Qt.WindowMaximized)
-        else:
-            if self.app.prefs.resultWindowRect is not None:
-                self.setGeometry(self.app.prefs.resultWindowRect)
-                # if not on any screen move to center of default screen
-                # moves to center of closest screen if partially off screen
-                frame = self.frameGeometry()
-                if QDesktopWidget().screenNumber(self) == -1:
-                    moveToScreenCenter(self)
-                elif QDesktopWidget().availableGeometry(self).contains(frame) is False:
-                    frame.moveCenter(QDesktopWidget().availableGeometry(self).center())
-                    self.move(frame.topLeft())
-            else:
-                moveToScreenCenter(self)
 
     # --- Private
     def _update_column_actions_status(self):
@@ -452,7 +442,10 @@ class ResultWindow(QMainWindow):
     def appWillSavePrefs(self):
         prefs = self.app.prefs
         prefs.resultWindowIsMaximized = self.isMaximized()
-        prefs.resultWindowRect = self.geometry()
+        if self.isMaximized():
+            prefs.resultWindowMaximizeLocation = self.geometry().topLeft()
+        else:
+            prefs.resultWindowRect = self.geometry()
 
     def columnToggled(self, action):
         index = action.item_index
@@ -478,3 +471,9 @@ class ResultWindow(QMainWindow):
     def closeEvent(self, event):
         # this saves the location of the results window when it is closed
         self.appWillSavePrefs()
+
+    def showEvent(self, event):
+        if self.isMaximized() is False:
+            # have to do this here as the frameGeometry is not correct until shown
+            moveToScreenCenter(self)
+        super().showEvent(event)
